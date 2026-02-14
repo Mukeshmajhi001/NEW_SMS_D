@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>Profile Photo</h4>
+                </div>
+                <div class="card-body text-center">
+                    {% if student.image %}
+                        <img src="{{ student.image.url }}" class="img-fluid rounded-circle mb-3" style="max-width: 200px;" alt="{{ student.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/200" class="img-fluid rounded-circle mb-3" alt="No Image">
+                    {% endif %}
+                    <h4>{{ student.name }}</h4>
+                    <p class="text-muted">{{ student.department.name }} Student</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>Student Profile</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th style="width: 200px;">Full Name:</th>
+                            <td>{{ student.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date of Birth:</th>
+                            <td>{{ student.dob|date:"F d, Y" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Gender:</th>
+                            <td>{{ student.gender }}</td>
+                        </tr>
+                        <tr>
+                            <th>Department:</th>
+                            <td>{{ student.department.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address:</th>
+                            <td>{{ student.address }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone Number:</th>
+                            <td>{{ student.phone }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ student.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Father's Name:</th>
+                            <td>{{ student.father_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Mother's Name:</th>
+                            <td>{{ student.mother_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Grand Father's Name:</th>
+                            <td>{{ student.grand_father_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Registration Date:</th>
+                            <td>{{ student.created_at|date:"F d, Y" }}</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+                        <a href="#" class="btn btn-primary">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

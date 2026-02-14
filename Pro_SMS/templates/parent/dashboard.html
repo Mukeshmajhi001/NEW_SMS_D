@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="text-center">Parent Login</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-center mb-4">Login using your child's details</p>
+                    
+                    <form method="POST" action="{% url 'parent_login' %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="student_name" class="form-label">Student's Full Name</label>
+                            <input type="text" class="form-control" id="student_name" name="student_name" 
+                                   placeholder="Enter student's name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="student_phone" class="form-label">Student's Phone Number</label>
+                            <input type="text" class="form-control" id="student_phone" name="student_phone" 
+                                   placeholder="Enter student's phone number" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="student_email" class="form-label">Student's Email</label>
+                            <input type="email" class="form-control" id="student_email" name="student_email" 
+                                   placeholder="Enter student's email" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-info w-100 text-white">Access as Parent</button>
+                    </form>
+                    
+                    <div class="alert alert-info mt-3">
+                        <small>
+                            <i class="fas fa-info-circle"></i> 
+                            Note: Parents can login using their child's registered details.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

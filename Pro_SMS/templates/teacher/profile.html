@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4>Profile Photo</h4>
+                </div>
+                <div class="card-body text-center">
+                    {% if teacher.image %}
+                        <img src="{{ teacher.image.url }}" class="img-fluid rounded-circle mb-3" style="max-width: 200px;" alt="{{ teacher.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/200" class="img-fluid rounded-circle mb-3" alt="No Image">
+                    {% endif %}
+                    <h4>{{ teacher.name }}</h4>
+                    <p class="text-muted">{{ teacher.qualification }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4>Teacher Profile</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th style="width: 200px;">Full Name:</th>
+                            <td>{{ teacher.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Qualification:</th>
+                            <td>{{ teacher.qualification }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone Number:</th>
+                            <td>{{ teacher.phone }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ teacher.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address:</th>
+                            <td>{{ teacher.address }}</td>
+                        </tr>
+                        <tr>
+                            <th>Registration Date:</th>
+                            <td>{{ teacher.created_at|date:"F d, Y" }}</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
