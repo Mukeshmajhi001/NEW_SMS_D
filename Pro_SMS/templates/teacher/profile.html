@@ -1,60 +1,386 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h4>Profile Photo</h4>
-                </div>
-                <div class="card-body text-center">
-                    {% if teacher.image %}
-                        <img src="{{ teacher.image.url }}" class="img-fluid rounded-circle mb-3" style="max-width: 200px;" alt="{{ teacher.name }}">
-                    {% else %}
-                        <img src="https://via.placeholder.com/200" class="img-fluid rounded-circle mb-3" alt="No Image">
-                    {% endif %}
-                    <h4>{{ teacher.name }}</h4>
-                    <p class="text-muted">{{ teacher.qualification }}</p>
-                </div>
-            </div>
-        </div>
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --success-gradient: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+    }
+    
+    .profile-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+    
+    .profile-card {
+        background: white;
+        border-radius: 25px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        border: none;
+    }
+    
+    .profile-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .profile-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 25px;
+        text-align: center;
+        border-bottom: 5px solid rgba(255,255,255,0.2);
+    }
+    
+    .profile-header h4 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+    
+    .profile-image-section {
+        padding: 30px 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    }
+    
+    .profile-image-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .profile-image {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid white;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+    }
+    
+    .profile-image:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+    }
+    
+    .default-image {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 80px;
+        font-weight: bold;
+        border: 5px solid white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .teacher-name {
+        margin-top: 20px;
+        font-size: 28px;
+        font-weight: 700;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: 1px;
+    }
+    
+    .teacher-qualification {
+        font-size: 18px;
+        color: #666;
+        background: #f0f0f0;
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 50px;
+        margin-top: 10px;
+    }
+    
+    .profile-details-section {
+        padding: 30px;
+        background: white;
+    }
+    
+    .details-title {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .details-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .info-item {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+    
+    .info-item:hover {
+        transform: translateX(5px);
+        border-color: #667eea;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        background: white;
+    }
+    
+    .info-label {
+        font-size: 14px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .info-label i {
+        margin-right: 8px;
+        color: #667eea;
+        font-size: 16px;
+    }
+    
+    .info-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        word-break: break-word;
+    }
+    
+    .registration-badge {
+        background: var(--success-gradient);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        margin: 20px 0;
+        color: white;
+    }
+    
+    .registration-badge .date {
+        font-size: 24px;
+        font-weight: 700;
+        display: block;
+        margin-top: 5px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    
+    .btn-custom {
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-primary-custom {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        color: white;
+    }
+    
+    .btn-secondary-custom {
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .btn-secondary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        color: white;
+    }
+    
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
         
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h4>Teacher Profile</h4>
+        .profile-image {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .default-image {
+            width: 150px;
+            height: 150px;
+            font-size: 60px;
+        }
+        
+        .teacher-name {
+            font-size: 24px;
+        }
+    }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animated {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+    
+    .delay-1 {
+        animation-delay: 0.2s;
+    }
+    
+    .delay-2 {
+        animation-delay: 0.4s;
+    }
+</style>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="profile-container">
+    <div class="container">
+        <!-- Profile Card -->
+        <div class="profile-card animated">
+            <!-- Header -->
+            <div class="profile-header">
+                <h4><i class="fas fa-user-circle me-2"></i>Teacher Profile</h4>
+            </div>
+            
+            <div class="row g-0">
+                <!-- Left Column - Profile Image -->
+                <div class="col-md-4">
+                    <div class="profile-image-section">
+                        <div class="profile-image-wrapper">
+                            {% if teacher.image %}
+                                <img src="{{ teacher.image.url }}" class="profile-image" alt="{{ teacher.name }}">
+                            {% else %}
+                                <div class="default-image">
+                                    {{ teacher.name|first|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <h2 class="teacher-name">{{ teacher.name }}</h2>
+                        <div class="teacher-qualification">
+                            <i class="fas fa-graduation-cap me-2"></i>{{ teacher.qualification }}
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <tr>
-                            <th style="width: 200px;">Full Name:</th>
-                            <td>{{ teacher.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Qualification:</th>
-                            <td>{{ teacher.qualification }}</td>
-                        </tr>
-                        <tr>
-                            <th>Phone Number:</th>
-                            <td>{{ teacher.phone }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email:</th>
-                            <td>{{ teacher.email }}</td>
-                        </tr>
-                        <tr>
-                            <th>Address:</th>
-                            <td>{{ teacher.address }}</td>
-                        </tr>
-                        <tr>
-                            <th>Registration Date:</th>
-                            <td>{{ teacher.created_at|date:"F d, Y" }}</td>
-                        </tr>
-                    </table>
-                    
-                    <div class="text-center mt-3">
-                        <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+                
+                <!-- Right Column - Profile Details -->
+                <div class="col-md-8">
+                    <div class="profile-details-section">
+                        <h3 class="details-title">
+                            <i class="fas fa-info-circle me-2"></i>Personal Information
+                        </h3>
+                        
+                        <div class="info-grid">
+                            <!-- Full Name -->
+                            <div class="info-item animated delay-1">
+                                <div class="info-label">
+                                    <i class="fas fa-user"></i> Full Name
+                                </div>
+                                <div class="info-value">{{ teacher.name }}</div>
+                            </div>
+                            
+                            <!-- Qualification -->
+                            <div class="info-item animated delay-1">
+                                <div class="info-label">
+                                    <i class="fas fa-graduation-cap"></i> Qualification
+                                </div>
+                                <div class="info-value">{{ teacher.qualification }}</div>
+                            </div>
+                            
+                            <!-- Phone -->
+                            <div class="info-item animated delay-2">
+                                <div class="info-label">
+                                    <i class="fas fa-phone"></i> Phone Number
+                                </div>
+                                <div class="info-value">
+                                    <a href="tel:{{ teacher.phone }}" style="color: #333; text-decoration: none;">
+                                        {{ teacher.phone }}
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Email -->
+                            <div class="info-item animated delay-2">
+                                <div class="info-label">
+                                    <i class="fas fa-envelope"></i> Email
+                                </div>
+                                <div class="info-value">
+                                    <a href="mailto:{{ teacher.email }}" style="color: #333; text-decoration: none;">
+                                        {{ teacher.email }}
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Address (Full width) -->
+                            <div class="info-item animated delay-2" style="grid-column: span 2;">
+                                <div class="info-label">
+                                    <i class="fas fa-map-marker-alt"></i> Address
+                                </div>
+                                <div class="info-value">{{ teacher.address }}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Registration Date -->
+                        <div class="registration-badge animated delay-2">
+                            <i class="fas fa-calendar-check me-2"></i>
+                            Registered on: 
+                            <span class="date">{{ teacher.created_at|date:"F d, Y" }}</span>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <a href="{% url 'teacher_dashboard' %}" class="btn-custom btn-secondary-custom">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                            <a href="#" class="btn-custom btn-primary-custom">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

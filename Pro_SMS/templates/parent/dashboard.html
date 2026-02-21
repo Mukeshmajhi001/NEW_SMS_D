@@ -1,49 +1,403 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h3 class="text-center">Parent Login</h3>
-                </div>
-                <div class="card-body">
-                    <p class="text-center mb-4">Login using your child's details</p>
-                    
-                    <form method="POST" action="{% url 'parent_login' %}">
-                        {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            <label for="student_name" class="form-label">Student's Full Name</label>
-                            <input type="text" class="form-control" id="student_name" name="student_name" 
-                                   placeholder="Enter student's name" required>
+<style>
+    :root {
+        --gradient-start: #667eea;
+        --gradient-end: #764ba2;
+        --card-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        --input-focus: rgba(102, 126, 234, 0.1);
+    }
+
+    .login-wrapper {
+        min-height: calc(100vh - 100px);
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 2rem 0;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease;
+        border: none;
+    }
+
+    .login-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        padding: 2.5rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-header-custom::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+        animation: shimmer 8s infinite linear;
+    }
+
+    @keyframes shimmer {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .card-header-custom h3 {
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .card-header-custom p {
+        color: rgba(255,255,255,0.9);
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        position: relative;
+    }
+
+    .card-body-custom {
+        padding: 2.5rem;
+        background: white;
+    }
+
+    .form-group-custom {
+        margin-bottom: 1.8rem;
+        position: relative;
+    }
+
+    .form-label-custom {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label-custom i {
+        color: var(--gradient-start);
+        font-size: 1.1rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        color: #a0aec0;
+        transition: color 0.3s ease;
+        z-index: 10;
+    }
+
+    .form-control-custom {
+        width: 100%;
+        padding: 0.9rem 1rem 0.9rem 2.8rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: var(--gradient-start);
+        background: white;
+        box-shadow: 0 0 0 4px var(--input-focus);
+    }
+
+    .form-control-custom:focus + .input-icon {
+        color: var(--gradient-start);
+    }
+
+    .form-control-custom::placeholder {
+        color: #a0aec0;
+        font-size: 0.95rem;
+    }
+
+    .btn-login {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-login:active {
+        transform: translateY(0);
+    }
+
+    .btn-login::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-login:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .alert-custom {
+        background: linear-gradient(135deg, #f6e05e10, #f6e05e20);
+        border-left: 5px solid #f6e05e;
+        border-radius: 15px;
+        padding: 1.2rem 1.5rem;
+        margin-top: 2rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-custom i {
+        color: #f6e05e;
+        font-size: 1.5rem;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 50%;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .alert-custom small {
+        color: #4a5568;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        flex: 1;
+    }
+
+    .alert-custom strong {
+        color: #2d3748;
+        font-weight: 700;
+    }
+
+    /* Decorative elements */
+    .floating-shapes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .shape {
+        position: absolute;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+
+    .shape-1 {
+        width: 100px;
+        height: 100px;
+        top: -20px;
+        right: -20px;
+    }
+
+    .shape-2 {
+        width: 150px;
+        height: 150px;
+        bottom: -50px;
+        left: -50px;
+    }
+
+    @media (max-width: 768px) {
+        .card-body-custom {
+            padding: 1.5rem;
+        }
+        
+        .card-header-custom h3 {
+            font-size: 1.5rem;
+        }
+        
+        .login-wrapper {
+            padding: 1rem;
+        }
+    }
+
+    /* Loading animation for button */
+    .btn-login.loading {
+        pointer-events: none;
+        opacity: 0.8;
+    }
+
+    .btn-login.loading::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s infinite linear;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Success animation */
+    .btn-login.success {
+        background: linear-gradient(135deg, #48bb78, #38a169);
+    }
+
+    .btn-login.success i {
+        margin-right: 0.5rem;
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <div class="login-card">
+                    <div class="card-header-custom">
+                        <div class="floating-shapes">
+                            <div class="shape shape-1"></div>
+                            <div class="shape shape-2"></div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="student_phone" class="form-label">Student's Phone Number</label>
-                            <input type="text" class="form-control" id="student_phone" name="student_phone" 
-                                   placeholder="Enter student's phone number" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="student_email" class="form-label">Student's Email</label>
-                            <input type="email" class="form-control" id="student_email" name="student_email" 
-                                   placeholder="Enter student's email" required>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-info w-100 text-white">Access as Parent</button>
-                    </form>
-                    
-                    <div class="alert alert-info mt-3">
-                        <small>
-                            <i class="fas fa-info-circle"></i> 
-                            Note: Parents can login using their child's registered details.
-                        </small>
+                        <h3>Welcome Back!</h3>
+                        <p>Parent Access Portal</p>
                     </div>
+                    
+                    <div class="card-body-custom">
+                        <form method="POST" action="{% url 'parent_login' %}" id="loginForm">
+                            {% csrf_token %}
+                            
+                            <div class="form-group-custom">
+                                <label for="student_name" class="form-label-custom">
+                                    <i class="fas fa-user-graduate"></i> Student's Full Name
+                                </label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <input type="text" class="form-control-custom" id="student_name" 
+                                           name="student_name" placeholder="Enter full name" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group-custom">
+                                <label for="student_phone" class="form-label-custom">
+                                    <i class="fas fa-phone-alt"></i> Student's Phone Number
+                                </label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-phone input-icon"></i>
+                                    <input type="tel" class="form-control-custom" id="student_phone" 
+                                           name="student_phone" placeholder="Enter phone number" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group-custom">
+                                <label for="student_email" class="form-label-custom">
+                                    <i class="fas fa-envelope"></i> Student's Email
+                                </label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-envelope input-icon"></i>
+                                    <input type="email" class="form-control-custom" id="student_email" 
+                                           name="student_email" placeholder="Enter email address" required>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-login" id="submitBtn">
+                                <span class="btn-text">Access Dashboard</span>
+                            </button>
+                        </form>
+                        
+                        <div class="alert-custom">
+                            <i class="fas fa-shield-alt"></i>
+                            <small>
+                                <strong>Secure Parent Access</strong><br>
+                                Login using your child's registered details. All information is encrypted and secure.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Help Section -->
+                <div class="text-center mt-4">
+                    <p style="color: #718096; font-size: 0.9rem;">
+                        <i class="fas fa-question-circle" style="color: var(--gradient-start);"></i>
+                        Need help? Contact school administration
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+    
+    // Optional: Add success animation (remove if not needed)
+    setTimeout(function() {
+        btn.classList.remove('loading');
+        btn.classList.add('success');
+        btn.innerHTML = '<i class="fas fa-check"></i> Verified! Redirecting...';
+    }, 1000);
+});
+</script>
 {% endblock %}

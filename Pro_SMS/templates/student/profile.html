@@ -1,85 +1,490 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+        --shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .profile-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+
+    /* Glassmorphism Card Effect */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 24px;
+        box-shadow: var(--shadow-lg);
+        transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-5px);
+    }
+
+    /* Profile Photo Section */
+    .profile-photo-wrapper {
+        background: var(--primary-gradient);
+        border-radius: 24px 24px 0 0;
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+
+    .profile-image-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 1.5rem;
+    }
+
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid white;
+        box-shadow: var(--shadow-lg);
+        transition: all 0.3s ease;
+    }
+
+    .profile-image:hover {
+        transform: scale(1.05);
+        border-color: #f0f0f0;
+    }
+
+    .image-placeholder {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid white;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .placeholder-icon {
+        font-size: 4rem;
+        color: #764ba2;
+        opacity: 0.8;
+    }
+
+    .student-name-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        display: inline-block;
+        backdrop-filter: blur(5px);
+        margin-top: 1rem;
+    }
+
+    .student-name-badge h4 {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.5rem;
+    }
+
+    .student-role {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        margin-top: 0.5rem;
+        letter-spacing: 1px;
+    }
+
+    /* Profile Details Section */
+    .profile-details {
+        padding: 2rem;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .section-title h4 {
+        margin: 0;
+        font-weight: 600;
+        color: #333;
+        font-size: 1.5rem;
+    }
+
+    .title-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-gradient);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    /* Info Grid Layout */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-card {
+        background: #f8f9fa;
+        border-radius: 16px;
+        padding: 1.2rem;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .info-card:hover {
+        background: white;
+        border-color: #667eea;
+        box-shadow: var(--shadow-sm);
+        transform: translateX(5px);
+    }
+
+    .info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-label i {
+        color: #667eea;
+        width: 20px;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        padding-left: 28px;
+    }
+
+    /* Full width items */
+    .info-card-full {
+        grid-column: span 2;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 2px dashed #f0f0f0;
+    }
+
+    .btn-modern {
+        padding: 0.8rem 2rem;
+        border-radius: 12px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary-modern {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary-modern:hover {
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .btn-secondary-modern {
+        background: #f8f9fa;
+        color: #333;
+        border: 1px solid #e0e0e0;
+    }
+
+    .btn-secondary-modern:hover {
+        background: #e9ecef;
+        transform: translateY(-2px);
+        color: #333;
+    }
+
+    /* Stats Cards */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 16px;
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #333;
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .info-card-full {
+            grid-column: span 1;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn-modern {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .stats-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-card {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 4px;
+    }
+</style>
+
+<div class="profile-container">
+    <div class="row g-4">
+        <!-- Left Column - Profile Photo -->
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4>Profile Photo</h4>
+            <div class="glass-card animate-card">
+                <div class="profile-photo-wrapper">
+                    <div class="profile-image-container">
+                        {% if student.image %}
+                            <img src="{{ student.image.url }}" class="profile-image" alt="{{ student.name }}">
+                        {% else %}
+                            <div class="image-placeholder">
+                                <i class="fas fa-user-graduate placeholder-icon"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="student-name-badge">
+                        <h4>{{ student.name }}</h4>
+                    </div>
+                    <p class="student-role">
+                        <i class="fas fa-graduation-cap me-2"></i>{{ student.department.name }} Student
+                    </p>
                 </div>
-                <div class="card-body text-center">
-                    {% if student.image %}
-                        <img src="{{ student.image.url }}" class="img-fluid rounded-circle mb-3" style="max-width: 200px;" alt="{{ student.name }}">
-                    {% else %}
-                        <img src="https://via.placeholder.com/200" class="img-fluid rounded-circle mb-3" alt="No Image">
-                    {% endif %}
-                    <h4>{{ student.name }}</h4>
-                    <p class="text-muted">{{ student.department.name }} Student</p>
+                
+                <!-- Quick Stats -->
+                <div class="p-3">
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ student.get_enrollment_count|default:"0" }}</div>
+                            <div class="stat-label">Courses</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">{{ student.get_attendance_percentage|default:"0%" }}</div>
+                            <div class="stat-label">Attendance</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">{{ student.get_semester|default:"1st" }}</div>
+                            <div class="stat-label">Semester</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         
+        <!-- Right Column - Profile Details -->
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4>Student Profile</h4>
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <tr>
-                            <th style="width: 200px;">Full Name:</th>
-                            <td>{{ student.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Date of Birth:</th>
-                            <td>{{ student.dob|date:"F d, Y" }}</td>
-                        </tr>
-                        <tr>
-                            <th>Gender:</th>
-                            <td>{{ student.gender }}</td>
-                        </tr>
-                        <tr>
-                            <th>Department:</th>
-                            <td>{{ student.department.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Address:</th>
-                            <td>{{ student.address }}</td>
-                        </tr>
-                        <tr>
-                            <th>Phone Number:</th>
-                            <td>{{ student.phone }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email:</th>
-                            <td>{{ student.email }}</td>
-                        </tr>
-                        <tr>
-                            <th>Father's Name:</th>
-                            <td>{{ student.father_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Mother's Name:</th>
-                            <td>{{ student.mother_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Grand Father's Name:</th>
-                            <td>{{ student.grand_father_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Registration Date:</th>
-                            <td>{{ student.created_at|date:"F d, Y" }}</td>
-                        </tr>
-                    </table>
+            <div class="glass-card animate-card" style="animation-delay: 0.2s;">
+                <div class="profile-details">
+                    <div class="section-title">
+                        <div class="title-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4>Personal Information</h4>
+                    </div>
                     
-                    <div class="text-center mt-3">
-                        <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
-                        <a href="#" class="btn btn-primary">Edit Profile</a>
+                    <div class="info-grid">
+                        <!-- Personal Details -->
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Date of Birth</span>
+                            </div>
+                            <div class="info-value">{{ student.dob|date:"F d, Y" }}</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-venus-mars"></i>
+                                <span>Gender</span>
+                            </div>
+                            <div class="info-value">{{ student.gender }}</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-building"></i>
+                                <span>Department</span>
+                            </div>
+                            <div class="info-value">{{ student.department.name }}</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-phone"></i>
+                                <span>Phone Number</span>
+                            </div>
+                            <div class="info-value">{{ student.phone }}</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-envelope"></i>
+                                <span>Email</span>
+                            </div>
+                            <div class="info-value">{{ student.email }}</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Registration Date</span>
+                            </div>
+                            <div class="info-value">{{ student.created_at|date:"F d, Y" }}</div>
+                        </div>
+                        
+                        <!-- Address (Full Width) -->
+                        <div class="info-card info-card-full">
+                            <div class="info-label">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Address</span>
+                            </div>
+                            <div class="info-value">{{ student.address }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Family Information -->
+                    <div class="section-title mt-4">
+                        <div class="title-icon">
+                            <i class="fas fa-family"></i>
+                        </div>
+                        <h4>Family Information</h4>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-user-tie"></i>
+                                <span>Father's Name</span>
+                            </div>
+                            <div class="info-value">{{ student.father_name }}</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-user-tie"></i>
+                                <span>Mother's Name</span>
+                            </div>
+                            <div class="info-value">{{ student.mother_name }}</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-label">
+                                <i class="fas fa-user-tie"></i>
+                                <span>Grand Father's Name</span>
+                            </div>
+                            <div class="info-value">{{ student.grand_father_name }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="{% url 'student_dashboard' %}" class="btn-modern btn-secondary-modern">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
+                        <a href="#" class="btn-modern btn-primary-modern">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                        <a href="#" class="btn-modern btn-secondary-modern">
+                            <i class="fas fa-download"></i> Download Info
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Font Awesome Icons (Add in base template if not present) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}

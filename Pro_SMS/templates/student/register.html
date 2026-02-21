@@ -1,109 +1,716 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">Student Registration</h3>
-                </div>
-                <div class="card-body">
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        
-                        <h5 class="mb-3">Personal Information</h5>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="name" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+<style>
+    /* Modern Minimalist Design */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .modern-wrapper {
+        min-height: 100vh;
+        background: #f8fafc;
+        padding: 40px 20px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .modern-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    /* Header Section */
+    .registration-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .registration-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(145deg, #1e293b, #0f172a);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+    }
+
+    .registration-header p {
+        color: #64748b;
+        font-size: 1.1rem;
+        font-weight: 400;
+    }
+
+    /* Progress Bar */
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        margin: 40px 0;
+        position: relative;
+        max-width: 600px;
+        margin: 40px auto;
+    }
+
+    .progress-steps::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #e2e8f0;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+
+    .step {
+        background: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #94a3b8;
+        border: 2px solid #e2e8f0;
+        position: relative;
+        z-index: 2;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .step.active {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+        box-shadow: 0 10px 20px -10px #3b82f6;
+    }
+
+    .step.completed {
+        background: #10b981;
+        border-color: #10b981;
+        color: white;
+    }
+
+    /* Main Card */
+    .modern-card {
+        background: white;
+        border-radius: 32px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .card-pattern {
+        height: 8px;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+    }
+
+    .card-content {
+        padding: 48px;
+    }
+
+    /* Form Sections */
+    .form-section {
+        display: none;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .form-section.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .section-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        background: #eff6ff;
+        color: #3b82f6;
+        border-radius: 100px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 10px;
+        letter-spacing: -0.3px;
+    }
+
+    .section-subtitle {
+        color: #64748b;
+        margin-bottom: 35px;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    /* Form Grid */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+
+    .form-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+
+    .full-width {
+        grid-column: span 2;
+    }
+
+    /* Input Fields */
+    .input-group {
+        position: relative;
+    }
+
+    .input-group label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-group input,
+    .input-group select,
+    .input-group textarea {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        background: white;
+        font-family: inherit;
+    }
+
+    .input-group textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .input-group input:hover,
+    .input-group select:hover,
+    .input-group textarea:hover {
+        border-color: #94a3b8;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus,
+    .input-group textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+
+    /* File Upload */
+    .upload-area {
+        border: 3px dashed #e2e8f0;
+        border-radius: 24px;
+        padding: 40px;
+        text-align: center;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        grid-column: span 2;
+    }
+
+    .upload-area:hover {
+        border-color: #3b82f6;
+        background: #eff6ff;
+    }
+
+    .upload-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+
+    .upload-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .upload-hint {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .upload-area input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Password Strength */
+    .password-requirements {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .requirement {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    .requirement i {
+        font-size: 14px;
+    }
+
+    .requirement.valid {
+        color: #10b981;
+    }
+
+    .requirement.invalid {
+        color: #ef4444;
+    }
+
+    /* Navigation Buttons */
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f1f5f9;
+    }
+
+    .nav-btn {
+        padding: 14px 32px;
+        border-radius: 100px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-prev {
+        background: white;
+        color: #475569;
+        border: 2px solid #e2e8f0;
+    }
+
+    .btn-prev:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+    }
+
+    .btn-next, .btn-submit {
+        background: #0f172a;
+        color: white;
+    }
+
+    .btn-next:hover, .btn-submit:hover {
+        background: #1e293b;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
+    }
+
+    .btn-submit {
+        background: linear-gradient(145deg, #3b82f6, #8b5cf6);
+    }
+
+    .btn-submit:hover {
+        background: linear-gradient(145deg, #2563eb, #7c3aed);
+    }
+
+    /* Login Link */
+    .login-section {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .login-link {
+        color: #64748b;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .login-link:hover {
+        color: #3b82f6;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .card-content {
+            padding: 30px;
+        }
+
+        .form-grid,
+        .form-grid-3,
+        .full-width {
+            grid-template-columns: 1fr;
+            grid-column: span 1;
+        }
+
+        .progress-steps {
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .form-navigation {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="modern-wrapper">
+    <div class="modern-container">
+        <!-- Header -->
+        <div class="registration-header">
+            <h1>Begin Your Journey</h1>
+            <p>Join thousands of students shaping their future</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="step active">1</div>
+            <div class="step">2</div>
+            <div class="step">3</div>
+            <div class="step">4</div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="modern-card">
+            <div class="card-pattern"></div>
+            <div class="card-content">
+                <form method="POST" enctype="multipart/form-data" id="multiStepForm">
+                    {% csrf_token %}
+                    
+                    <!-- Section 1: Personal Info -->
+                    <div class="form-section active" id="section1">
+                        <div class="section-badge">Step 01 — Personal Details</div>
+                        <h2 class="section-title">Tell us about yourself</h2>
+                        <p class="section-subtitle">This information helps us create your unique student profile</p>
+
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Full name</label>
+                                <input type="text" name="name" placeholder="e.g., John Doe" required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="dob" class="form-label">Date of Birth</label>
-                                <input type="date" class="form-control" id="dob" name="dob" required>
+
+                            <div class="input-group">
+                                <label>Date of birth</label>
+                                <input type="date" name="dob" required>
                             </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="gender" class="form-label">Gender</label>
-                                <select class="form-control" id="gender" name="gender" required>
-                                    <option value="">Select Gender</option>
+
+                            <div class="input-group">
+                                <label>Gender</label>
+                                <select name="gender" required>
+                                    <option value="" disabled selected>Select gender</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="department" class="form-label">Department</label>
-                                <select class="form-control" id="department" name="department" required>
-                                    <option value="">Select Department</option>
+
+                            <div class="input-group">
+                                <label>Department</label>
+                                <select name="department" required>
+                                    <option value="" disabled selected>Choose department</option>
                                     {% for dept in departments %}
                                     <option value="{{ dept.id }}">{{ dept.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
-                        </div>
-                        
-                        <h5 class="mb-3 mt-4">Contact Information</h5>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">Phone Number</label>
-                                <input type="text" class="form-control" id="phone" name="phone" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+
+                            <div class="input-group full-width">
+                                <label>Address</label>
+                                <textarea name="address" placeholder="Enter your complete address" required></textarea>
                             </div>
                         </div>
-                        
-                        <h5 class="mb-3 mt-4">Parent Information</h5>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="father_name" class="form-label">Father's Name</label>
-                                <input type="text" class="form-control" id="father_name" name="father_name" required>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="mother_name" class="form-label">Mother's Name</label>
-                                <input type="text" class="form-control" id="mother_name" name="mother_name" required>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="grand_father_name" class="form-label">Grand Father's Name</label>
-                                <input type="text" class="form-control" id="grand_father_name" name="grand_father_name" required>
-                            </div>
-                        </div>
-                        
-                        <h5 class="mb-3 mt-4">Security & Photo</h5>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="confirm_password" class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="image" class="form-label">Upload Photo</label>
-                            <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success w-100">Register</button>
-                    </form>
-                    
-                    <div class="text-center mt-3">
-                        <a href="{% url 'student_login' %}">Already registered? Login here</a>
                     </div>
+
+                    <!-- Section 2: Contact Info -->
+                    <div class="form-section" id="section2">
+                        <div class="section-badge">Step 02 — Contact Information</div>
+                        <h2 class="section-title">How to reach you</h2>
+                        <p class="section-subtitle">We'll use these details for important communications</p>
+
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Phone number</label>
+                                <input type="tel" name="phone" placeholder="+1 234 567 8900" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Email address</label>
+                                <input type="email" name="email" placeholder="john@example.com" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Parent Info -->
+                    <div class="form-section" id="section3">
+                        <div class="section-badge">Step 03 — Family Details</div>
+                        <h2 class="section-title">Parent/Guardian information</h2>
+                        <p class="section-subtitle">Emergency contact and family details</p>
+
+                        <div class="form-grid-3">
+                            <div class="input-group">
+                                <label>Father's name</label>
+                                <input type="text" name="father_name" placeholder="Father's full name" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Mother's name</label>
+                                <input type="text" name="mother_name" placeholder="Mother's full name" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Grandfather's name</label>
+                                <input type="text" name="grand_father_name" placeholder="Grandfather's name" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Security & Photo -->
+                    <div class="form-section" id="section4">
+                        <div class="section-badge">Step 04 — Security & Photo</div>
+                        <h2 class="section-title">Almost there!</h2>
+                        <p class="section-subtitle">Set up your account security and upload a photo</p>
+
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Password</label>
+                                <input type="password" name="password" id="password" placeholder="Create a strong password" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Confirm password</label>
+                                <input type="password" name="confirm_password" id="confirm_password" placeholder="Re-enter password" required>
+                            </div>
+
+                            <!-- Password Requirements -->
+                            <div class="full-width">
+                                <div class="password-requirements">
+                                    <div class="requirement" id="length">
+                                        <i class="fas fa-circle"></i> At least 8 characters
+                                    </div>
+                                    <div class="requirement" id="uppercase">
+                                        <i class="fas fa-circle"></i> One uppercase letter
+                                    </div>
+                                    <div class="requirement" id="number">
+                                        <i class="fas fa-circle"></i> One number
+                                    </div>
+                                    <div class="requirement" id="match">
+                                        <i class="fas fa-circle"></i> Passwords match
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Photo Upload -->
+                            <div class="full-width">
+                                <div class="upload-area" id="uploadArea">
+                                    <div class="upload-icon">📸</div>
+                                    <div class="upload-title">Upload your photo</div>
+                                    <div class="upload-hint">Click or drag and drop (JPG, PNG up to 5MB)</div>
+                                    <input type="file" name="image" accept="image/*" id="imageUpload" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <button type="button" class="nav-btn btn-prev" id="prevBtn" onclick="changeSection(-1)">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="nav-btn btn-next" id="nextBtn" onclick="changeSection(1)">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button type="submit" class="nav-btn btn-submit" id="submitBtn" style="display: none;">
+                            <i class="fas fa-check"></i> Complete Registration
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Login Link -->
+                <div class="login-section">
+                    <a href="{% url 'student_login' %}" class="login-link">
+                        <i class="fas fa-arrow-right"></i>
+                        Already registered? Sign in to your account
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Multi-step form navigation
+    let currentSection = 1;
+    const totalSections = 4;
+
+    function changeSection(direction) {
+        const newSection = currentSection + direction;
+        
+        if (newSection < 1 || newSection > totalSections) return;
+        
+        // Update sections
+        document.getElementById(`section${currentSection}`).classList.remove('active');
+        document.getElementById(`section${newSection}`).classList.add('active');
+        
+        // Update progress steps
+        const steps = document.querySelectorAll('.step');
+        steps.forEach((step, index) => {
+            if (index + 1 < newSection) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+            } else if (index + 1 === newSection) {
+                step.classList.add('active');
+                step.classList.remove('completed');
+            } else {
+                step.classList.remove('active', 'completed');
+            }
+        });
+        
+        // Update buttons visibility
+        document.getElementById('prevBtn').style.display = newSection === 1 ? 'none' : 'inline-flex';
+        
+        if (newSection === totalSections) {
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'inline-flex';
+        } else {
+            document.getElementById('nextBtn').style.display = 'inline-flex';
+            document.getElementById('submitBtn').style.display = 'none';
+        }
+        
+        currentSection = newSection;
+    }
+
+    // Password validation
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    function validatePassword() {
+        const pwd = password.value;
+        
+        // Length check
+        document.getElementById('length').classList.toggle('valid', pwd.length >= 8);
+        document.getElementById('length').classList.toggle('invalid', pwd.length < 8);
+        document.getElementById('length').querySelector('i').className = pwd.length >= 8 ? 'fas fa-check-circle' : 'fas fa-times-circle';
+        
+        // Uppercase check
+        const hasUpper = /[A-Z]/.test(pwd);
+        document.getElementById('uppercase').classList.toggle('valid', hasUpper);
+        document.getElementById('uppercase').classList.toggle('invalid', !hasUpper);
+        document.getElementById('uppercase').querySelector('i').className = hasUpper ? 'fas fa-check-circle' : 'fas fa-times-circle';
+        
+        // Number check
+        const hasNumber = /[0-9]/.test(pwd);
+        document.getElementById('number').classList.toggle('valid', hasNumber);
+        document.getElementById('number').classList.toggle('invalid', !hasNumber);
+        document.getElementById('number').querySelector('i').className = hasNumber ? 'fas fa-check-circle' : 'fas fa-times-circle';
+        
+        // Match check
+        const match = pwd === confirmPassword.value && pwd !== '';
+        document.getElementById('match').classList.toggle('valid', match);
+        document.getElementById('match').classList.toggle('invalid', !match);
+        document.getElementById('match').querySelector('i').className = match ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    }
+    
+    password.addEventListener('input', validatePassword);
+    confirmPassword.addEventListener('input', validatePassword);
+
+    // File upload preview
+    const uploadArea = document.getElementById('uploadArea');
+    const imageUpload = document.getElementById('imageUpload');
+    
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.background = '#eff6ff';
+        uploadArea.style.borderColor = '#3b82f6';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.background = '#f8fafc';
+        uploadArea.style.borderColor = '#e2e8f0';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.background = '#f8fafc';
+        uploadArea.style.borderColor = '#e2e8f0';
+        
+        if (e.dataTransfer.files.length) {
+            imageUpload.files = e.dataTransfer.files;
+            updateUploadText(e.dataTransfer.files[0].name);
+        }
+    });
+    
+    imageUpload.addEventListener('change', function() {
+        if (this.files.length) {
+            updateUploadText(this.files[0].name);
+        }
+    });
+    
+    function updateUploadText(filename) {
+        const title = uploadArea.querySelector('.upload-title');
+        title.innerHTML = `✅ ${filename}`;
+    }
+
+    // Form submission validation
+    document.getElementById('multiStepForm').addEventListener('submit', function(e) {
+        if (password.value !== confirmPassword.value) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+        }
+    });
+
+    // Hide previous button on first section
+    document.getElementById('prevBtn').style.display = 'none';
+</script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
